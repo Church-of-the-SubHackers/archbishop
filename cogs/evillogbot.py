@@ -37,6 +37,10 @@ class EvilLogBot(commands.Cog):
         """
         self.bot = bot
         Config().load_config()
+        # check if config and quit if not set up
+        if (not self.isConfigValid()):
+            print("EvilLogBot config is invalid. Not loaded.")
+            return
         self.ignoredNicks = Config().get("IGNORE_NICKS").split(",")
         self.dbManager = DB_module()
         self.dbManager.prepareDb()
@@ -53,14 +57,26 @@ class EvilLogBot(commands.Cog):
             # skip gifs
             if ("tenor.com" in message.content): return
             # get rid of all emojis
-            msg = self.strip_emoji(message.content).strip()
+            msg = self.stripEmoji(message.content).strip()
             if ((len(msg) >= int(Config().get("MIN_MSG_LEN"))) and (message.author.name not in self.ignoredNicks)):
                 # print("%s %s %s" % (int(message.created_at.timestamp()), message.author.name, msg))
                 self.dbManager.insertLog(int(message.created_at.timestamp()), message.author.name, msg)
     
-    def strip_emoji(self, text):
+    def stripEmoji(self, text):
         return re.sub(emoji.get_emoji_regexp(), r"", text)
-        
+    
+    def isConfigValid(self):
+        return (
+            (Config().get("DB_NAME").strip() != "") and
+            (Config().get("LOG_TABLE_NAME").strip() != "") and
+            (Config().get("CHANNEL").strip() != "") and
+            (Config().get("LOG_NAME").strip() != "") and
+            (Config().get("LOG_AGE").strip() != "") and
+            (Config().get("IGNORE_NICKS").strip() != "") and
+            (Config().get("MIN_MSG_LEN").strip() != "") and
+            (Config().get("EXPORT_LOG_TIME").strip() != "")
+        )
+    
     async def exportLog(self):
         self.dbManager.cleanDb(Config().get("LOG_AGE"))
         logs = self.dbManager.getLogs(Config().get("LOG_AGE"))
