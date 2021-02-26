@@ -26,6 +26,7 @@ class EvilLogBot(commands.Cog):
     dbManager = None
     ignoredNicks = []
     threadStarted = False
+    configValid = False
 
     def __init__(self, bot):
         """
@@ -38,7 +39,8 @@ class EvilLogBot(commands.Cog):
         self.bot = bot
         Config().load_config()
         # check if config and quit if not set up
-        if (not self.isConfigValid()):
+        self.configValid = self.isConfigValid()
+        if (not self.configValid):
             print("EvilLogBot config is invalid. Not loaded.")
             return
         self.ignoredNicks = Config().get("IGNORE_NICKS").split(",")
@@ -49,6 +51,7 @@ class EvilLogBot(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         """on_message executes whenever a message is posted"""
+        if (not self.configValid): return
         if (not self.threadStarted):
             self.threadStarted = True
             await self.exportLog()
