@@ -47,8 +47,10 @@ class UrbanDicto(commands.Cog):
                     break
             if (singleDef is not None):
                 singleDef.definition = re.sub("[\[\]]", "", singleDef.definition)
+                singleDef.definition = singleDef.definition.strip()
                 singleDef.example = re.sub("[\[\]]", "", singleDef.example)
                 singleDef.example = re.sub("\n+", "\n> ", singleDef.example)
+                singleDef.example = singleDef.example.strip()
                 await channel.send(
                     "**{word}**:\n{definition}\n> {example}\n\n:arrow_up:: {upvotes}  :arrow_down:: {downvotes}"
                     .format(
