@@ -51,13 +51,22 @@ class UrbanDicto(commands.Cog):
                 singleDef.example = re.sub("[\[\]]", "", singleDef.example)
                 singleDef.example = re.sub("\n+", "\n> ", singleDef.example)
                 singleDef.example = singleDef.example.strip()
-                await channel.send(
-                    "**{word}**:\n{definition}\n> {example}\n\n:arrow_up:: {upvotes}  :arrow_down:: {downvotes}"
-                    .format(
-                        word=singleDef.word, definition=singleDef.definition, example=singleDef.example,
-                        upvotes=singleDef.upvotes, downvotes=singleDef.downvotes
+                if (singleDef.example != ""):
+                    await channel.send(
+                        "**{word}**:\n{definition}\n> {example}\n\n:arrow_up:: {upvotes}  :arrow_down:: {downvotes}"
+                        .format(
+                            word=singleDef.word, definition=singleDef.definition, example=singleDef.example,
+                            upvotes=singleDef.upvotes, downvotes=singleDef.downvotes
+                        )
                     )
-                )
+                else:
+                    await channel.send(
+                        "**{word}**:\n{definition}\n\n:arrow_up:: {upvotes}  :arrow_down:: {downvotes}"
+                        .format(
+                            word=singleDef.word, definition=singleDef.definition,
+                            upvotes=singleDef.upvotes, downvotes=singleDef.downvotes
+                        )
+                    )
             else:
                 await channel.send("No definition found for **%s**" % (usrInput,))
         else:
