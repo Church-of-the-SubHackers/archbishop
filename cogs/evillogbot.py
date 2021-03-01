@@ -43,7 +43,7 @@ class EvilLogBot(commands.Cog):
         if (not self.configValid):
             print("EvilLogBot config is invalid. Not loaded.")
             return
-        self.ignoredNicks = Config().get("IGNORE_NICKS").split(",")
+        self.ignoredNicks = Config().get("IGNORE_NICKS").lower().split(",")
         self.dbManager = DB_module()
         self.dbManager.prepareDb()
 
@@ -61,7 +61,7 @@ class EvilLogBot(commands.Cog):
             if ("tenor.com" in message.content): return
             # get rid of all emojis
             msg = self.stripEmoji(message.content).strip()
-            if ((len(msg) >= int(Config().get("MIN_MSG_LEN"))) and (message.author.name not in self.ignoredNicks)):
+            if ((len(msg) >= int(Config().get("MIN_MSG_LEN"))) and (message.author.name.lower() not in self.ignoredNicks)):
                 # print("%s %s %s" % (int(message.created_at.timestamp()), message.author.name, msg))
                 self.dbManager.insertLog(int(message.created_at.timestamp()), message.author.name, msg)
     
