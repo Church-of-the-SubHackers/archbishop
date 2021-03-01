@@ -42,7 +42,7 @@ class UrbanDicto(commands.Cog):
             singleDef = None
             for d in defs:
                 # pick an object that has less than N symbols in text
-                if ((len(d.definition) <= 200) and (len(d.example) <= 200)):
+                if ((len(d.definition) <= 300) and (len(d.example) <= 300)):
                     singleDef = d
                     break
             if (singleDef is not None):
