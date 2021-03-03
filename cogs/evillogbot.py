@@ -43,7 +43,7 @@ class EvilLogBot(commands.Cog):
         if (not self.configValid):
             print("EvilLogBot config is invalid. Not loaded.")
             return
-        self.ignoredNicks = Config().get("IGNORE_NICKS").lower().split(",")
+        self.ignoredNicks = Config().get("ELB_IGNORE_NICKS").lower().split(",")
         self.dbManager = DB_module()
         self.dbManager.prepareDb()
 
@@ -56,12 +56,12 @@ class EvilLogBot(commands.Cog):
             self.threadStarted = True
             await self.exportLog()
         # check if the message we got was from the channel we are logging and if it's not a system msg
-        if ((message.channel.name == Config().get("CHANNEL")) and (not message.is_system())):
+        if ((message.channel.name == Config().get("ELB_CHANNEL")) and (not message.is_system())):
             # skip gifs
             if ("tenor.com" in message.content): return
             # get rid of all emojis
             msg = self.stripEmoji(message.content).strip()
-            if ((len(msg) >= int(Config().get("MIN_MSG_LEN"))) and (message.author.name.lower() not in self.ignoredNicks)):
+            if ((len(msg) >= int(Config().get("ELB_MIN_MSG_LEN"))) and (message.author.name.lower() not in self.ignoredNicks)):
                 # print("%s %s %s" % (int(message.created_at.timestamp()), message.author.name, msg))
                 self.dbManager.insertLog(int(message.created_at.timestamp()), message.author.name, msg)
     
@@ -70,21 +70,21 @@ class EvilLogBot(commands.Cog):
     
     def isConfigValid(self):
         return (
-            (Config().get("DB_NAME").strip() != "") and
-            (Config().get("LOG_TABLE_NAME").strip() != "") and
-            (Config().get("CHANNEL").strip() != "") and
-            (Config().get("LOG_NAME").strip() != "") and
-            (Config().get("LOG_AGE").strip() != "") and
-            (Config().get("IGNORE_NICKS").strip() != "") and
-            (Config().get("MIN_MSG_LEN").strip() != "") and
-            (Config().get("EXPORT_LOG_TIME").strip() != "")
+            (Config().get("ELB_DB_NAME").strip() != "") and
+            (Config().get("ELB_LOG_TABLE_NAME").strip() != "") and
+            (Config().get("ELB_CHANNEL").strip() != "") and
+            (Config().get("ELB_LOG_NAME").strip() != "") and
+            (Config().get("ELB_LOG_AGE").strip() != "") and
+            (Config().get("ELB_IGNORE_NICKS").strip() != "") and
+            (Config().get("ELB_MIN_MSG_LEN").strip() != "") and
+            (Config().get("ELB_EXPORT_LOG_TIME").strip() != "")
         )
     
     async def exportLog(self):
-        self.dbManager.cleanDb(Config().get("LOG_AGE"))
-        logs = self.dbManager.getLogs(Config().get("LOG_AGE"))
+        self.dbManager.cleanDb(Config().get("ELB_LOG_AGE"))
+        logs = self.dbManager.getLogs(Config().get("ELB_LOG_AGE"))
         tag_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
-        with open(Config().get("LOG_NAME"), "w") as f:
+        with open(Config().get("ELB_LOG_NAME"), "w") as f:
             for row in logs:
                 rowLines = row[2].split("\n")
                 for line in rowLines:
@@ -99,7 +99,7 @@ class EvilLogBot(commands.Cog):
                             g.write(''.join(line for line in lines))
                             g.write("\r\n")
                         continue
-        secsToSleep = (int(Config().get("EXPORT_LOG_TIME"))*60)*60
+        secsToSleep = (int(Config().get("ELB_EXPORT_LOG_TIME"))*60)*60
         await asyncio.sleep(secsToSleep)
         self.threadStarted = False
     
@@ -113,8 +113,8 @@ class DB_module():
     }
     
     def __init__(self):
-        self.configs["db_name"] = Config().get("DB_NAME")
-        self.configs["log_table_name"] = Config().get("LOG_TABLE_NAME")
+        self.configs["db_name"] = Config().get("ELB_DB_NAME")
+        self.configs["log_table_name"] = Config().get("ELB_LOG_TABLE_NAME")
     
     ''' Prepares the database for usage and returns a connection object '''
     def prepareDb(self):
