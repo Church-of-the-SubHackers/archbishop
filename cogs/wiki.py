@@ -39,10 +39,11 @@ class Wikipedia(commands.Cog):
     async def lookupAndSend(self, channel, usrInput):
         page = self.wClient.page(usrInput.strip())
         if (page.exists()):
-            # might need to trim the summary to N symbols if it gets out of hand
+            summary = page.summary[:1000]
+            if (len(page.summary) > 1000): summary += "..."
             await channel.send(
                     "**{usrinput}**:\n{summary}\n{url}"
-                    .format(usrinput=page.title, summary=page.summary, url=page.fullurl)
+                    .format(usrinput=page.title, summary=summary, url=page.fullurl)
                 )
         else:
             await channel.send("No pages found for **%s**" % (usrInput,))
