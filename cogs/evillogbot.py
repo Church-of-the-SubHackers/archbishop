@@ -25,7 +25,6 @@ class EvilLogBot(commands.Cog):
 
     dbManager = None
     ignoredNicks = []
-    threadStarted = False
     configValid = False
 
     def __init__(self, bot):
@@ -47,14 +46,14 @@ class EvilLogBot(commands.Cog):
         self.dbManager = DB_module()
         self.dbManager.prepareDb()
 
-    # Events
+    @commands.Cog.listener()
+    async def on_ready(self):
+        await self.exportLog()
+    
     @commands.Cog.listener()
     async def on_message(self, message):
         """on_message executes whenever a message is posted"""
         if (not self.configValid): return
-        if (not self.threadStarted):
-            self.threadStarted = True
-            await self.exportLog()
         # check if the message we got was from the channel we are logging and if it's not a system msg
         if ((message.channel.name == Config().get("ELB_CHANNEL")) and (not message.is_system())):
             # skip gifs
@@ -80,27 +79,27 @@ class EvilLogBot(commands.Cog):
         )
     
     async def exportLog(self):
-        self.dbManager.cleanDb(Config().get("ELB_LOG_AGE"))
-        logs = self.dbManager.getLogs(Config().get("ELB_LOG_AGE"))
-        tag_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
-        with open(Config().get("ELB_LOG_NAME"), "w") as f:
-            for row in logs:
-                rowLines = row[2].split("\n")
-                for line in rowLines:
-                    try:
-                        t = time.strftime("%a %d %b %H:%M:%S", time.gmtime(float(row[0])))
-                        stripped = html.escape(tag_re.sub("", line).strip())
-                        f.write("[%s] <%s> %s\n" % (t, row[1], stripped))
-                    except:
-                        exc_type, exc_value, exc_traceback = sys.exc_info()
-                        lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-                        with open("parse_errors.txt", "a") as g:
-                            g.write(''.join(line for line in lines))
-                            g.write("\r\n")
-                        continue
-        secsToSleep = (int(Config().get("ELB_EXPORT_LOG_TIME"))*60)*60
-        await asyncio.sleep(secsToSleep)
-        self.threadStarted = False
+        while (True):
+            self.dbManager.cleanDb(Config().get("ELB_LOG_AGE"))
+            logs = self.dbManager.getLogs(Config().get("ELB_LOG_AGE"))
+            tag_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
+            with open(Config().get("ELB_LOG_NAME"), "w") as f:
+                for row in logs:
+                    rowLines = row[2].split("\n")
+                    for line in rowLines:
+                        try:
+                            t = time.strftime("%a %d %b %H:%M:%S", time.gmtime(float(row[0])))
+                            stripped = html.escape(tag_re.sub("", line).strip())
+                            f.write("[%s] <%s> %s\n" % (t, row[1], stripped))
+                        except:
+                            exc_type, exc_value, exc_traceback = sys.exc_info()
+                            lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                            with open("parse_errors.txt", "a") as g:
+                                g.write(''.join(line for line in lines))
+                                g.write("\n")
+                            continue
+            secsToSleep = (int(Config().get("ELB_EXPORT_LOG_TIME"))*60)*60
+            await asyncio.sleep(secsToSleep)
     
 #======================================================================
 class DB_module():
