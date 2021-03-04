@@ -71,7 +71,6 @@ class EvilLogBot(commands.Cog):
     def isConfigValid(self):
         return (
             (Config().get("ELB_DB_NAME").strip() != "") and
-            (Config().get("ELB_LOG_TABLE_NAME").strip() != "") and
             (Config().get("ELB_CHANNEL").strip() != "") and
             (Config().get("ELB_LOG_NAME").strip() != "") and
             (Config().get("ELB_LOG_AGE").strip() != "") and
@@ -108,26 +107,24 @@ class DB_module():
     
     dbConn = None
     configs = {
-        "db_name": "",
-        "log_table_name": ""
+        "db_name": ""
     }
     
     def __init__(self):
         self.configs["db_name"] = Config().get("ELB_DB_NAME")
-        self.configs["log_table_name"] = Config().get("ELB_LOG_TABLE_NAME")
     
     ''' Prepares the database for usage and returns a connection object '''
     def prepareDb(self):
         if (self.dbConn == None):
             self.dbConn = sqlite3.connect(self.configs["db_name"])
             self.dbConn.text_factory = str
-            self.dbConn.cursor().execute("CREATE TABLE IF NOT EXISTS {0} (time text, nickname text, log text)".format(self.configs["log_table_name"]))
+            self.dbConn.cursor().execute("CREATE TABLE IF NOT EXISTS logs (time text, nickname text, log text)")
             self.dbConn.commit()
         return self.dbConn
     
     ''' Inserts given text into the database '''
     def insertLog(self, time, nickname, text):
-        self.dbConn.cursor().execute("INSERT INTO {0} VALUES (?, ?, ?)".format(self.configs["log_table_name"]), (time, nickname, text))
+        self.dbConn.cursor().execute("INSERT INTO logs VALUES (?, ?, ?)", (time, nickname, text))
         self.dbConn.commit()
     
     '''
@@ -137,12 +134,12 @@ class DB_module():
     '''
     def cleanDb(self, logAge):
         rmPeriod = int(time.time() - timedelta(days=(int(logAge)+1)).total_seconds())
-        self.dbConn.cursor().execute("DELETE FROM {0} WHERE time <= ?".format(self.configs["log_table_name"]), (rmPeriod,))
+        self.dbConn.cursor().execute("DELETE FROM logs WHERE time <= ?", (rmPeriod,))
         self.dbConn.commit()
 
     def getLogs(self, logAge):
         logPeriod = int(time.time() - timedelta(days=int(logAge)).total_seconds())
-        return self.dbConn.cursor().execute("SELECT * FROM {0} WHERE time > ?".format(self.configs["log_table_name"]), (str(logPeriod),)).fetchall()
+        return self.dbConn.cursor().execute("SELECT * FROM logs WHERE time > ?", (str(logPeriod),)).fetchall()
         
 #======================================================================
 
