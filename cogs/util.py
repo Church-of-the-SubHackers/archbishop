@@ -46,6 +46,8 @@ class Util(commands.Cog):
 
     Raises:
         ExtensionNotLoaded: If cog cannot be loaded
+        ExtensionAlreadyLoaded: If Cog already Loaded 
+
 
     Returns:
         None
