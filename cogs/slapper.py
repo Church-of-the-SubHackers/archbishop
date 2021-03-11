@@ -267,11 +267,8 @@ class Slapper(commands.Cog):
         if message.content.startswith("!slap"):
             msg_parts = message.content.split(" ", 1)
             if len(msg_parts) > 1:
-                await self.slap(msg_parts[1], message.channel)
-
-    async def slap(self, nickname, channel):
-        slap_msg = self.slaps[randint(0, len(self.slaps) - 1)].format(nickname)
-        await channel.send("%s %s" % (self.bot.user.name, slap_msg))
+                slap_msg = self.slaps[randint(0, len(self.slaps) - 1)].format(msg_parts[1])
+                await message.channel.send("%s %s" % (self.bot.user.name, slap_msg))
 
 
 def setup(bot):

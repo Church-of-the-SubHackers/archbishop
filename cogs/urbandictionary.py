@@ -52,19 +52,13 @@ class UrbanDicto(commands.Cog):
                 single_def.example = re.sub("\n+", "\n> ", single_def.example)
                 if single_def.example != "":
                     await channel.send(
-                        "**{word}**:\n{definition}\n> {example}\n\n:arrow_up:: {upvotes}  :arrow_down:: {downvotes}"
-                            .format(
-                            word=single_def.word, definition=single_def.definition, example=single_def.example,
-                            upvotes=single_def.upvotes, downvotes=single_def.downvotes
-                        )
+                        f"**{single_def.word}**:\n{single_def.definition}\n> {single_def.example}\n\n"
+                        f":arrow_up:: {single_def.upvotes}  :arrow_down:: {single_def.downvotes}"
                     )
                 else:
                     await channel.send(
-                        "**{word}**:\n{definition}\n\n:arrow_up:: {upvotes}  :arrow_down:: {downvotes}"
-                            .format(
-                            word=single_def.word, definition=single_def.definition,
-                            upvotes=single_def.upvotes, downvotes=single_def.downvotes
-                        )
+                        f"**{single_def.word}**:\n{single_def.definition}\n\n:arrow_up:: {single_def.upvotes}"
+                        f"  :arrow_down:: {single_def.downvotes}"
                     )
             else:
                 await channel.send("No definition found for **%s**" % (usr_input,))
