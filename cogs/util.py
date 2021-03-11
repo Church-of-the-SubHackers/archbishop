@@ -66,6 +66,11 @@ class Util(commands.Cog):
                 f"Ensure cog exists."
             )
             pass
+        except discord.ext.commands.errors.ExtensionAlreadyLoaded as err_load:
+            await ctx.send(
+                f"Cog Already Loaded."
+            )
+            pass
         else:
             await ctx.send(f"{extension} loaded")
 
