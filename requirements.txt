@@ -43,4 +43,4 @@ zipp==3.4.0
 emoji==1.2.0
 udpy==2.0.0
 wikipedia-api==0.5.4
-feedparser=6.0.2
+feedparser==6.0.2
