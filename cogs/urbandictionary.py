@@ -1,7 +1,5 @@
-import asyncio
 import re
 
-import discord
 from discord.ext import commands
 
 from helpers.config import Config
@@ -31,47 +29,42 @@ class UrbanDicto(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         """on_message executes whenever a message is posted"""
-        if (message.content.startswith("!ud")):
-            msgParts = message.content.split(" ", 1)
-            if (len(msgParts) > 1):
-                await self.lookupAndSend(message.channel, msgParts[1].strip())
+        if message.content.startswith("!ud"):
+            msg_parts = message.content.split(" ", 1)
+            if len(msg_parts) > 1:
+                await self.lookup_and_send(message.channel, msg_parts[1].strip())
 
-    async def lookupAndSend(self, channel, usrInput):
-        defs = self.uClient.get_definition(usrInput)
-        if (len(defs) > 0):
-            singleDef = None
+    async def lookup_and_send(self, channel, usr_input):
+        defs = self.uClient.get_definition(usr_input)
+        if len(defs) > 0:
+            single_def = None
             for d in defs:
                 # pick an object that has less than N symbols in text
-                if ((len(d.definition) <= 300) and (len(d.example) <= 300)):
-                    singleDef = d
+                if (len(d.definition) <= 300) and (len(d.example) <= 300):
+                    single_def = d
                     break
-            if (singleDef is not None):
-                singleDef.definition = singleDef.definition.strip()
-                singleDef.definition = re.sub("[\[\]]", "", singleDef.definition)
-                singleDef.example = singleDef.example.strip()
-                singleDef.example = re.sub("[\[\]]", "", singleDef.example)
-                singleDef.example = re.sub("\r\n", "\n", singleDef.example)
-                singleDef.example = re.sub("\n+", "\n> ", singleDef.example)
-                if (singleDef.example != ""):
+            if single_def is not None:
+                single_def.definition = single_def.definition.strip()
+                single_def.definition = re.sub("[\[\]]", "", single_def.definition)
+                single_def.example = single_def.example.strip()
+                single_def.example = re.sub("[\[\]]", "", single_def.example)
+                single_def.example = re.sub("\r\n", "\n", single_def.example)
+                single_def.example = re.sub("\n+", "\n> ", single_def.example)
+                if single_def.example != "":
                     await channel.send(
-                        "**{word}**:\n{definition}\n> {example}\n\n:arrow_up:: {upvotes}  :arrow_down:: {downvotes}"
-                        .format(
-                            word=singleDef.word, definition=singleDef.definition, example=singleDef.example,
-                            upvotes=singleDef.upvotes, downvotes=singleDef.downvotes
-                        )
+                        f"**{single_def.word}**:\n{single_def.definition}\n> {single_def.example}\n\n"
+                        f":arrow_up:: {single_def.upvotes}  :arrow_down:: {single_def.downvotes}"
                     )
                 else:
                     await channel.send(
-                        "**{word}**:\n{definition}\n\n:arrow_up:: {upvotes}  :arrow_down:: {downvotes}"
-                        .format(
-                            word=singleDef.word, definition=singleDef.definition,
-                            upvotes=singleDef.upvotes, downvotes=singleDef.downvotes
-                        )
+                        f"**{single_def.word}**:\n{single_def.definition}\n\n:arrow_up:: {single_def.upvotes}"
+                        f"  :arrow_down:: {single_def.downvotes}"
                     )
             else:
-                await channel.send("No definition found for **%s**" % (usrInput,))
+                await channel.send("No definition found for **%s**" % (usr_input,))
         else:
-            await channel.send("No definition found for **%s**" % (usrInput,))
+            await channel.send("No definition found for **%s**" % (usr_input,))
+
 
 def setup(bot):
     bot.add_cog(UrbanDicto(bot))

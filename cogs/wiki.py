@@ -1,8 +1,5 @@
-import asyncio
-import re
 import wikipediaapi
 
-import discord
 from discord.ext import commands
 
 from helpers.config import Config
@@ -31,22 +28,22 @@ class Wikipedia(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         """on_message executes whenever a message is posted"""
-        if (message.content.startswith("!wiki")):
-            msgParts = message.content.split(" ", 1)
-            if (len(msgParts) > 1):
-                await self.lookupAndSend(message.channel, msgParts[1].strip())
+        if message.content.startswith("!wiki"):
+            msg_parts = message.content.split(" ", 1)
+            if len(msg_parts) > 1:
+                await self.lookup_and_send(message.channel, msg_parts[1].strip())
 
-    async def lookupAndSend(self, channel, usrInput):
-        page = self.wClient.page(usrInput.strip())
-        if (page.exists()):
+    async def lookup_and_send(self, channel, usr_input):
+        page = self.wClient.page(usr_input.strip())
+        if page.exists():
             summary = page.summary[:1000]
-            if (len(page.summary) > 1000): summary += "..."
+            if len(page.summary) > 1000: summary += "..."
             await channel.send(
-                    "**{usrinput}**:\n{summary}\n{url}"
-                    .format(usrinput=page.title, summary=summary, url=page.fullurl)
-                )
+                "**{usrinput}**:\n{summary}\n{url}".format(usrinput=page.title, summary=summary, url=page.fullurl)
+            )
         else:
-            await channel.send("No pages found for **%s**" % (usrInput,))
+            await channel.send("No pages found for **%s**" % (usr_input,))
+
 
 def setup(bot):
     bot.add_cog(Wikipedia(bot))

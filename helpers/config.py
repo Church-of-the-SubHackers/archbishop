@@ -44,10 +44,10 @@ class Config:
         ValueError
             If no key was passed as a parameter
         """
-        if (not isinstance(key, str)):
+        if not isinstance(key, str):
             print("Key was not string")
             raise ValueError("Key must be a string")
-        elif (key == ""):
+        elif key == "":
             print("Key was empty")
             raise ValueError("Key cannot be empty")
 

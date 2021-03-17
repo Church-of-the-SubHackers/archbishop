@@ -46,6 +46,8 @@ class Util(commands.Cog):
 
     Raises:
         ExtensionNotLoaded: If cog cannot be loaded
+        ExtensionAlreadyLoaded: If Cog already Loaded 
+
 
     Returns:
         None
@@ -64,6 +66,11 @@ class Util(commands.Cog):
             await ctx.send(
                 f"{err_load} "
                 f"Ensure cog exists."
+            )
+            pass
+        except discord.ext.commands.errors.ExtensionAlreadyLoaded:
+            await ctx.send(
+                f"Cog Already Loaded."
             )
             pass
         else:

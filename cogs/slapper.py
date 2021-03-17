@@ -1,6 +1,3 @@
-import asyncio
-
-import discord
 from discord.ext import commands
 
 from helpers.config import Config
@@ -54,11 +51,13 @@ class Slapper(commands.Cog):
         'slaps {0} about with a squashed frog',
         'chucks a cream cake at {0}',
         'rides a rhino into {0}',
-        'grabs the aluminum bat from the house and runs out to practice baseball with {0}\'s head...whoops!...WHACK!!.. Now {0}\'s pea-sized brain is all over the field! RETARDO!',
+        'grabs the aluminum bat from the house and runs out to practice baseball with {0}\'s '
+        'head...whoops!...WHACK!!.. Now {0}\'s pea-sized brain is all over the field! RETARDO!',
         'shoves {0} off the nearest cliff',
         'smashes a wine bottle over {0}\'s head',
         'slaps {0} with a lil sweet kitten --- ahhh 8D',
-        'grabs his chainsaw off his shelf, steps up to {0} and slowly, so slowly, cuts off his thick neck, letting the blood spew from his arteries, covering $me in the warm liquid',
+        'grabs his chainsaw off his shelf, steps up to {0} and slowly, so slowly, cuts off his thick neck, '
+        'letting the blood spew from his arteries, covering $me in the warm liquid',
         'picks up his watermellon and smashes it over {0}\'s head',
         'plays tiddlewinks with {0}\'s teeth',
         'rips out {0}\'s eyeballs and eats them --- mmmmmmm',
@@ -68,7 +67,8 @@ class Slapper(commands.Cog):
         'rides a monster truck over {0}',
         'wedgies {0} !!!!! OUCH !!!',
         'locks {0} in a freezer and swallows the key :)',
-        'thoughs a fake left punch at {0} , while at the same time, pulling out his samari sword and, swinging it through the air, slices off {0}\'s ears',
+        'thoughs a fake left punch at {0} , while at the same time, pulling out his samari sword and, swinging it '
+        'through the air, slices off {0}\'s ears',
         'drops an elephant onto {0}',
         'chucks {0} into a pit full of crocodiles',
         'rips open {0}\'s gut and pulls out his intestines',
@@ -95,7 +95,8 @@ class Slapper(commands.Cog):
         'gives {0} a box of chocolates',
         'cuts {0} into little pieces, puts his bits in envelopes and posts them to antartica',
         'grabs {0} and shooves him in a wheely bin',
-        'grabs {0}\'s head and rips it off. Then with all his will power, summons the belch monster within, and spews his dinner down {0}\'s neck',
+        'grabs {0}\'s head and rips it off. Then with all his will power, summons the belch monster within, '
+        'and spews his dinner down {0}\'s neck',
         'slaps {0} with a reeally FAT CAT - meeeoooowwwww !!!',
         'purrs at {0} ;)',
         'chucks a concrete cricket ball at {0}\'s head',
@@ -215,7 +216,8 @@ class Slapper(commands.Cog):
         'puts {0} in an oven',
         'pulls out {0}\'s lungs through his throat !',
         'wonders why {0} has such a fat arse',
-        'slaps {0} about with a trout, yes thats right, a fucking TROUT !! u got a fucking problem with my trout ? hey ? WELL !! HAVE U !!! TOUGH !!!!!!!!!!!!!!',
+        'slaps {0} about with a trout, yes thats right, a fucking TROUT !! u got a fucking problem with my trout ? '
+        'hey ? WELL !! HAVE U !!! TOUGH !!!!!!!!!!!!!!',
         'feeds {0} to a hungry pack of dolphins',
         'suffocates {0} with a large condom',
         'blasts {0} apart with his mobile phone radiation emitter',
@@ -262,15 +264,12 @@ class Slapper(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         """on_message executes whenever a message is posted"""
-        if (message.content.startswith("!slap")):
-            msgParts = message.content.split(" ", 1)
-            if (len(msgParts) > 1):
-                self.reminder_channel = message.channel
-                await self.slap(msgParts[1])
+        if message.content.startswith("!slap"):
+            msg_parts = message.content.split(" ", 1)
+            if len(msg_parts) > 1:
+                slap_msg = self.slaps[randint(0, len(self.slaps) - 1)].format(msg_parts[1])
+                await message.channel.send("%s %s" % (self.bot.user.name, slap_msg))
 
-    async def slap(self, nickname):
-        slapMsg = self.slaps[randint(0, len(self.slaps)-1)].format(nickname)
-        await self.reminder_channel.send("%s %s" % (self.bot.user.name, slapMsg))
 
 def setup(bot):
     bot.add_cog(Slapper(bot))
